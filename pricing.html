@@ -1,1 +1,160 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pricing Analysis | SARTHAK Case Lab</title><link rel="stylesheet" href="assets/styles.css"></head><body><header class="top"><div class="container nav"><a class="brand" href="index.html"><span class="mark">S</span><span>SARTHAK Case Lab<small>Operations strategy • Forecasting • Inventory • Pricing</small></span></a><nav class="links"><a href="index.html#lab">Lab</a><a href="strategy.html">Strategy</a><a href="forecast.html">Forecast</a><a href="inventory.html">Inventory</a><a href="pricing.html">Pricing</a><a href="finance.html">Finance</a><a href="decision.html">Decision</a><a href="assignments.html">Assignments</a></nav></div></header><div class="hero small"><div class="container"><div class="crumb"><a href="index.html#lab">Case Lab</a> / Pricing Analysis</div><h1>Price the upside—and protect the downside</h1><p>Compare selling-season prices and clearance agreements using expected-profit calculations.</p></div></div><main><section><div class="container"><div class="head"><div class="kicker">Pricing and clearance analysis</div><h2>Compare upside margin with downside protection</h2><p class="lead">Selling-season price changes the return on sales. Clearance value changes the economic exposure created by leftover inventory.</p></div><div class="split"><aside class="card pad sticky"><div class="control"><label>Strategy</label><select id="strategy"><option value="ssp1">SSP 1</option><option value="ssp2">SSP 2</option><option value="ssp3" selected>SSP 3</option><option value="csp1">CSP 1</option><option value="csp2">CSP 2</option></select></div><div class="control"><label>Production Q: <b id="pq"></b></label><input id="pQ" type="range" min="5" max="14" value="11"></div><div class="control"><label>Demand mean μ</label><input id="pMu" type="number" value="7"></div><div class="control"><label>Demand SD σ</label><input id="pSigma" type="number" value="5"></div><div class="control"><label>Unit cost</label><input id="pCost" type="number" value="57"></div><div class="formula" id="pFormula"></div></aside><div><div class="kpis"><div class="kpi"><small>z</small><b id="pz"></b></div><div class="kpi"><small>Expected lost sales</small><b id="plost"></b></div><div class="kpi"><small>Expected sales</small><b id="psales"></b></div><div class="kpi"><small>Expected leftovers</small><b id="pleft"></b></div></div><div class="card pad" style="margin-top:16px"><h3>Expected profit</h3><b id="pprofit" style="font-size:2rem;color:#0d7f78"></b></div><div id="profitChart" class="chart" style="margin-top:18px"></div></div></div><div class="card pad" style="margin-top:22px"><h3>Optimal quantity by strategy</h3><div class="tablewrap"><table><thead><tr><th>Strategy</th><th>Description</th><th class="r">Selling price</th><th class="r">Clearance price</th><th class="r">Optimal Q</th><th class="r">Max expected profit</th></tr></thead><tbody id="pricingBody"></tbody></table></div><div id="bestPricing" class="callout"></div><p class="lead">The 40% corporate-clearance value is ₹58.60, slightly above the estimated unit cost of ₹57. Under that assumption, leftover inventory is no longer loss-making, which increases the recommended production quantity. The result depends on the reliability of the corporate clearance agreement.</p></div></div></section></main><footer class="footer"><div class="container"><b>The SARTHAK Dilemma — Interactive Case Lab</b><br>Student-facing educational site based on the supplied short case, teaching note and classroom workbooks.</div></footer><script src="assets/app.js"></script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Interactive pricing and single-period inventory laboratory for the SARTHAK case">
+  <title>Pricing Laboratory | SARTHAK Case Lab</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/pricing-lab.css">
+</head>
+<body>
+  <header class="top">
+    <div class="container nav">
+      <a class="brand" href="index.html"><span class="mark">S</span><span>SARTHAK Case Lab<small>Operations strategy • Forecasting • Inventory • Pricing</small></span></a>
+      <nav class="links"><a href="index.html#lab">Lab</a><a href="strategy.html">Strategy</a><a href="forecast.html">Forecast</a><a href="inventory.html">Inventory</a><a href="pricing.html">Pricing</a><a href="finance.html">Finance</a><a href="decision.html">Decision</a><a href="assignments.html">Assignments</a></nav>
+    </div>
+  </header>
+
+  <div class="hero small">
+    <div class="container">
+      <div class="crumb"><a href="index.html#lab">Case Lab</a> / Pricing Laboratory</div>
+      <h1>Build and test your own pricing scenario</h1>
+      <p>Change demand, production, cost, selling-price and clearance assumptions. The expected-profit curves, optimal quantities and comparison table update immediately.</p>
+    </div>
+  </div>
+
+  <main>
+    <section>
+      <div class="container">
+        <div class="head">
+          <div class="kicker">Student-controlled decision laboratory</div>
+          <h2>Price the upside—and make the downside visible</h2>
+          <p class="lead">The graph shows expected profit across production quantities. Your selected quantity is marked with a circle; the calculated optimum for the inspected strategy is marked with a diamond.</p>
+        </div>
+
+        <div class="pricing-lab-layout">
+          <aside class="card pad lab-panel">
+            <div class="lab-panel-head">
+              <span class="badge">Live scenario inputs</span>
+              <button class="btn alt small" id="resetScenario" type="button">Reset case data</button>
+            </div>
+
+            <div id="validationMessage" class="lab-alert" hidden></div>
+
+            <div class="selected-strategy-line"><span>Strategy being inspected</span><b id="selectedStrategyName">SSP 3</b></div>
+            <div class="control">
+              <label for="pStrategy">Pricing strategy</label>
+              <select id="pStrategy"></select>
+            </div>
+
+            <div class="input-pair">
+              <div class="control">
+                <label for="pPrice">Selling price (₹)</label>
+                <input id="pPrice" type="number" min="0" step="0.01" value="155">
+              </div>
+              <div class="control">
+                <label for="pSalvage">Clearance value (₹)</label>
+                <input id="pSalvage" type="number" min="0" step="0.01" value="31">
+              </div>
+            </div>
+
+            <div class="control">
+              <label for="pQ">Selected production quantity Q: <b id="pq">11</b></label>
+              <div class="quantity-row">
+                <input id="pQ" type="number" min="0" max="200" step="1" value="11">
+                <input id="pQRange" type="range" min="0" max="22" step="1" value="11">
+              </div>
+            </div>
+
+            <div class="input-pair">
+              <div class="control">
+                <label for="pMu">Demand mean μ</label>
+                <input id="pMu" type="number" min="0" step="0.1" value="7">
+              </div>
+              <div class="control">
+                <label for="pSigma">Demand SD σ</label>
+                <input id="pSigma" type="number" min="0.01" step="0.1" value="5">
+              </div>
+            </div>
+
+            <div class="input-pair">
+              <div class="control">
+                <label for="pCost">Unit cost (₹)</label>
+                <input id="pCost" type="number" min="0" step="0.01" value="57">
+              </div>
+              <div class="control">
+                <label for="pMaxQ">Maximum Q on graph</label>
+                <input id="pMaxQ" type="number" min="1" max="200" step="1" value="22" disabled>
+                <label class="toggle-row" for="autoRange"><input id="autoRange" type="checkbox" checked> Auto: at least ceil(μ + 3σ)</label>
+              </div>
+            </div>
+
+            <div class="lab-buttons">
+              <button class="btn small" id="addStrategy" type="button">Add custom strategy</button>
+              <button class="btn danger small" id="removeStrategy" type="button" disabled>Remove selected custom</button>
+            </div>
+          </aside>
+
+          <div class="lab-results">
+            <div class="kpis">
+              <div class="kpi"><small>z-statistic</small><b id="pz">—</b></div>
+              <div class="kpi"><small>Expected lost sales</small><b id="plost">—</b></div>
+              <div class="kpi"><small>Expected sales</small><b id="psales">—</b></div>
+              <div class="kpi"><small>Expected leftovers</small><b id="pleft">—</b></div>
+            </div>
+            <div class="kpis secondary">
+              <div class="kpi"><small>Sales revenue</small><b id="prevenue">—</b></div>
+              <div class="kpi"><small>Clearance recovery</small><b id="precovery">—</b></div>
+              <div class="kpi"><small>Production cost</small><b id="pcost">—</b></div>
+              <div class="kpi"><small>Expected profit</small><b id="pprofit">—</b></div>
+            </div>
+
+            <div class="result-comparison">
+              <div class="metric"><span>Optimal quantity</span><b id="optimalQ">—</b></div>
+              <div class="metric"><span>Maximum expected profit</span><b id="optimalProfit">—</b></div>
+              <div class="metric"><span>Opportunity loss at selected Q</span><b id="opportunityLoss">—</b></div>
+            </div>
+
+            <div id="selectedComparison" class="callout"></div>
+
+            <div class="card pad" style="margin-top:18px">
+              <div class="chart-heading">
+                <div><h3>Expected-profit curves</h3><p>Change any assumption to redraw the graph. Click a strategy name in the comparison table to inspect it.</p></div>
+              </div>
+              <div id="profitChart" class="chart"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card pad" style="margin-top:22px">
+          <h3>Optimal quantity by pricing strategy</h3>
+          <p class="lead">All displayed strategies use the same demand and unit-cost assumptions. Add up to three custom strategies and edit their selling price and clearance value in the input panel.</p>
+          <div class="tablewrap">
+            <table>
+              <thead><tr><th>Strategy</th><th class="r">Selling price</th><th class="r">Clearance value</th><th class="r">Optimal Q</th><th class="r">Maximum expected profit</th></tr></thead>
+              <tbody id="pricingBody"></tbody>
+            </table>
+          </div>
+          <div id="bestPricing" class="callout"></div>
+        </div>
+
+        <div class="model-note">
+          <div class="card pad">
+            <h3>Calculation for the selected quantity</h3>
+            <div class="formula explainer" id="pFormula"></div>
+          </div>
+          <div class="card pad">
+            <h3>How to interpret the result</h3>
+            <p>The recommendation is conditional on the demand distribution, cost, selling price and clearance assumptions entered above. Production quantity changes the highlighted point; demand and economic assumptions redraw the full curves.</p>
+            <div class="callout warn"><b>Teaching caution:</b> the normal-demand model and the input values are managerial approximations. Test alternative scenarios and explain the evidence supporting your assumptions before recommending a quantity.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="container"><b>The SARTHAK Dilemma — Interactive Case Lab</b><br>Student-facing educational site based on the supplied short case, teaching note and classroom workbooks.</div></footer>
+  <script src="assets/pricing-lab.js"></script>
+</body>
+</html>
