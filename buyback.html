@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Interactive corporate buyback analysis for the SARTHAK Tote Bag V2 case">
+  <title>Corporate Buyback Plan | SARTHAK Case Lab</title>
+  <link rel="stylesheet" href="assets/styles.css">
+  <link rel="stylesheet" href="assets/buyback-lab.css">
+</head>
+<body>
+  <header class="top">
+    <div class="container nav">
+      <a class="brand" href="index.html"><span class="mark">S</span><span>SARTHAK Case Lab<small>Operations strategy • Forecasting • Inventory • Pricing</small></span></a>
+      <nav class="links"><a href="index.html#lab">Lab</a><a href="strategy.html">Strategy</a><a href="forecast.html">Forecast</a><a href="inventory.html">Inventory</a><a href="pricing.html">Pricing</a><a href="buyback.html">Buyback</a><a href="finance.html">Finance</a><a href="decision.html">Decision</a><a href="assignments.html">Assignments</a></nav>
+    </div>
+  </header>
+
+  <div class="hero small">
+    <div class="container">
+      <div class="crumb"><a href="index.html#lab">Case Lab</a> / Corporate Buyback Plan</div>
+      <h1>Structure the corporate commitment before producing more</h1>
+      <p>Compare a guaranteed capped buyback with a probabilistic commitment. Test how contract capacity and reliability change the production recommendation.</p>
+    </div>
+  </div>
+
+  <main>
+    <section>
+      <div class="container">
+        <div class="head">
+          <div class="kicker">Tote Bag V2 contract laboratory</div>
+          <h2>Two ways to share leftover-inventory risk</h2>
+          <p class="lead">The corporate plan is valuable only when its quantity, price, reliability, quality conditions and payment terms are explicit. The calculations below treat the contract as a decision-support model, not as a substitute for managerial judgment.</p>
+        </div>
+
+        <div class="contract-cards">
+          <article class="card pad contract-card capped">
+            <span class="badge">Plan A</span>
+            <h3>Guaranteed capped buyback</h3>
+            <p>The partner purchases at most <b>B</b> eligible leftover units at the corporate price. Any leftover inventory above the cap receives the ordinary clearance value.</p>
+            <div class="mini-formula">Clearance revenue = v<sub>b</sub> min(L,B) + v<sub>o</sub> max(L−B,0)</div>
+          </article>
+          <article class="card pad contract-card probabilistic">
+            <span class="badge">Plan B</span>
+            <h3>Probabilistic commitment</h3>
+            <p>The partner accepts all eligible leftovers with probability <b>ρ</b>. Otherwise, the leftovers are sold through the ordinary clearance channel.</p>
+            <div class="mini-formula">v<sub>effective</sub> = ρv<sub>b</sub> + (1−ρ)v<sub>o</sub></div>
+          </article>
+        </div>
+
+        <div class="buyback-layout">
+          <aside class="card pad buyback-panel">
+            <div class="panel-head">
+              <span class="badge">Live assumptions</span>
+              <button class="btn alt small" id="bbReset" type="button">Reset case data</button>
+            </div>
+
+            <div id="bbValidation" class="bb-alert" hidden></div>
+
+            <div class="control">
+              <label for="bbQ">Selected production quantity Q: <b id="bbQValue">12</b></label>
+              <div class="quantity-row">
+                <input id="bbQ" type="number" min="1" max="200" step="1" value="12">
+                <input id="bbQRange" type="range" min="1" max="27" step="1" value="12">
+              </div>
+            </div>
+
+            <div class="input-pair">
+              <div class="control">
+                <label for="bbMu">Demand mean μ</label>
+                <input id="bbMu" type="number" min="0" step="0.1" value="7">
+              </div>
+              <div class="control">
+                <label for="bbSigma">Demand SD σ</label>
+                <input id="bbSigma" type="number" min="0.01" step="0.1" value="5">
+              </div>
+            </div>
+
+            <div class="input-pair">
+              <div class="control">
+                <label for="bbPrice">Regular selling price (₹)</label>
+                <input id="bbPrice" type="number" min="0" step="0.01" value="146.5">
+              </div>
+              <div class="control">
+                <label for="bbCost">Unit production cost (₹)</label>
+                <input id="bbCost" type="number" min="0" step="0.01" value="57">
+              </div>
+            </div>
+
+            <div class="input-pair">
+              <div class="control">
+                <label for="bbOrdinary">Ordinary clearance value v<sub>o</sub> (₹)</label>
+                <input id="bbOrdinary" type="number" min="0" step="0.01" value="29.3">
+              </div>
+              <div class="control">
+                <label for="bbCorporate">Corporate buyback value v<sub>b</sub> (₹)</label>
+                <input id="bbCorporate" type="number" min="0" step="0.01" value="58.6">
+              </div>
+            </div>
+
+            <div class="input-pair">
+              <div class="control">
+                <label for="bbCap">Guaranteed buyback cap B</label>
+                <input id="bbCap" type="number" min="0" max="200" step="1" value="5">
+              </div>
+              <div class="control">
+                <label for="bbRho">Acceptance probability ρ: <b id="bbRhoValue">75%</b></label>
+                <input id="bbRho" type="range" min="0" max="100" step="1" value="75">
+              </div>
+            </div>
+
+            <div class="control">
+              <label for="bbMaxQ">Maximum Q on graphs</label>
+              <input id="bbMaxQ" type="number" min="5" max="200" step="1" value="27" disabled>
+              <label class="toggle-row" for="bbAutoRange"><input id="bbAutoRange" type="checkbox" checked> Auto range based on μ, σ, B and selected Q</label>
+            </div>
+          </aside>
+
+          <div class="buyback-results">
+            <div class="kpis">
+              <div class="kpi"><small>Expected regular sales</small><b id="bbSales">—</b></div>
+              <div class="kpi"><small>Expected leftovers</small><b id="bbLeftovers">—</b></div>
+              <div class="kpi"><small>Effective probabilistic value</small><b id="bbEffective">—</b></div>
+              <div class="kpi"><small>Reliability threshold</small><b id="bbThreshold">—</b></div>
+            </div>
+
+            <div class="comparison-grid">
+              <article class="card pad plan-result capped">
+                <h3>Capped buyback</h3>
+                <div class="result-line"><span>Expected units bought by partner</span><b id="bbCovered">—</b></div>
+                <div class="result-line"><span>Expected units in ordinary clearance</span><b id="bbOverflow">—</b></div>
+                <div class="result-line"><span>Expected profit at selected Q</span><b id="bbCapSelectedProfit">—</b></div>
+                <div class="result-line"><span>Optimal integer Q</span><b id="bbCapOptimalQ">—</b></div>
+                <div class="result-line"><span>Maximum expected profit</span><b id="bbCapOptimalProfit">—</b></div>
+              </article>
+              <article class="card pad plan-result probabilistic">
+                <h3>Probabilistic commitment</h3>
+                <div class="result-line"><span>Acceptance probability</span><b id="bbProbRho">—</b></div>
+                <div class="result-line"><span>Expected profit at selected Q</span><b id="bbProbSelectedProfit">—</b></div>
+                <div class="result-line"><span>Optimal integer Q</span><b id="bbProbOptimalQ">—</b></div>
+                <div class="result-line"><span>Maximum expected profit</span><b id="bbProbOptimalProfit">—</b></div>
+                <div class="result-line"><span>Contract status</span><b id="bbProbStatus">—</b></div>
+              </article>
+            </div>
+
+            <div id="bbRecommendation" class="callout"></div>
+
+            <div class="card pad chart-card">
+              <div class="chart-heading">
+                <div>
+                  <h3>Expected profit by production quantity</h3>
+                  <p>Compare ordinary clearance, the capped contract, and the probabilistic commitment under the current assumptions.</p>
+                </div>
+              </div>
+              <div id="bbProfitChart" class="chart buyback-chart"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sensitivity-grid">
+          <div class="card pad">
+            <h3>Reliability and effective clearance value</h3>
+            <p class="lead">The effective value rises linearly with ρ. The cost line identifies when leftover units cease to impose a downside under an unrestricted probabilistic commitment.</p>
+            <div id="bbValueSensitivity" class="chart sensitivity-chart"></div>
+          </div>
+          <div class="card pad">
+            <h3>Reliability and modelled optimal quantity</h3>
+            <p class="lead">The recommended quantity generally increases as the corporate commitment becomes more reliable. A boundary result is not a genuine finite optimum.</p>
+            <div id="bbQuantitySensitivity" class="chart sensitivity-chart"></div>
+          </div>
+        </div>
+
+        <div class="card pad comparison-table-card">
+          <h3>Comparison of the three risk treatments</h3>
+          <div class="tablewrap">
+            <table>
+              <thead>
+                <tr><th>Risk treatment</th><th class="r">Selected-Q profit</th><th class="r">Optimal Q</th><th class="r">Maximum profit</th><th>Interpretation</th></tr>
+              </thead>
+              <tbody id="bbComparisonBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="formula-grid">
+          <div class="card pad">
+            <h3>Capped-buyback calculation</h3>
+            <div class="formula explainer" id="bbCapFormula"></div>
+          </div>
+          <div class="card pad">
+            <h3>Probabilistic-commitment calculation</h3>
+            <div class="formula explainer" id="bbProbFormula"></div>
+          </div>
+        </div>
+
+        <div class="contract-checklist">
+          <div class="card pad">
+            <h3>Contract conditions to verify</h3>
+            <ul>
+              <li>Is the cap a firm obligation or only an expression of interest?</li>
+              <li>Is ₹58.60 the net amount after transport, packaging, quality checking and commissions?</li>
+              <li>Which products qualify, and who determines whether quality standards are met?</li>
+              <li>When does the partner confirm acceptance, take delivery and make payment?</li>
+              <li>What happens to leftovers above the cap or after a rejected probabilistic commitment?</li>
+            </ul>
+          </div>
+          <div class="card pad">
+            <h3>Managerial interpretation</h3>
+            <p>A capped plan protects SARTHAK only up to a known quantity. A probabilistic plan protects all leftovers only in expectation and transfers reliability risk back to SARTHAK.</p>
+            <div class="callout warn"><b>Modelling caution:</b> the normal-demand assumption, estimated cost, salvage values and commitment probability are managerial approximations. The contract should be piloted and recalibrated using realized sales, rejection rates, payment delays and actual net recovery.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer"><div class="container"><b>The SARTHAK Dilemma — Interactive Case Lab</b><br>Student-facing educational site based on the supplied short case, teaching note and classroom workbooks.</div></footer>
+  <script src="assets/buyback-lab.js"></script>
+</body>
+</html>
