@@ -1,0 +1,46 @@
+name: Remove CSP2 from pricing page
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/remove-csp2.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Remove CSP2 from built-in pricing strategies
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('assets/pricing-lab.js')
+          text = path.read_text(encoding='utf-8')
+          lines = text.splitlines()
+          revised = [line for line in lines if "id: 'csp2'" not in line]
+
+          if revised == lines:
+              print('CSP2 was already absent; no source change required.')
+          else:
+              path.write_text('\n'.join(revised) + '\n', encoding='utf-8')
+              print('Removed CSP2 from CASE_STRATEGIES.')
+          PY
+
+      - name: Commit the page update
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/pricing-lab.js
+          if git diff --cached --quiet; then
+            echo 'No changes to commit.'
+          else
+            git commit -m 'Remove CSP2 from pricing laboratory'
+            git push
+          fi
