@@ -13,7 +13,6 @@
     { id: 'ssp2', label: 'SSP 2', description: '₹150 selling price; 20% clearance', price: 150, salvage: 30, color: '#66a65c', custom: false },
     { id: 'ssp3', label: 'SSP 3', description: '₹155 selling price; 20% clearance', price: 155, salvage: 31, color: '#7d5bb1', custom: false },
     { id: 'csp1', label: 'CSP 1', description: 'Average selling price; 30% clearance', price: 146.5, salvage: 43.95, color: '#d98b2b', custom: false },
-    { id: 'csp2', label: 'CSP 2', description: 'Average selling price; 40% clearance', price: 146.5, salvage: 58.6, color: '#0d7f78', custom: false }
   ];
 
   const CUSTOM_COLORS = ['#b84a52', '#2f8f85', '#9a6d22'];
