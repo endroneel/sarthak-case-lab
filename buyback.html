@@ -7,6 +7,7 @@
   <title>Corporate Buyback Plan | SARTHAK Case Lab</title>
   <link rel="stylesheet" href="assets/styles.css">
   <link rel="stylesheet" href="assets/buyback-lab.css">
+  <link rel="stylesheet" href="assets/buyback-explanation.css">
 </head>
 <body>
   <header class="top">
@@ -182,6 +183,55 @@
           </div>
         </div>
 
+        <div id="probExplanation" class="card pad prob-explanation" hidden>
+          <div class="prob-explanation-head">
+            <div>
+              <div class="kicker">How to read the probabilistic result</div>
+              <h3>Expected protection is not guaranteed protection</h3>
+              <p>The explanation below updates with the selected acceptance probability, demand assumptions, prices, cost, and production quantity.</p>
+            </div>
+            <span class="badge">Teaching-note interpretation</span>
+          </div>
+
+          <div class="prob-summary">
+            <div class="metric"><span>Acceptance probability</span><b id="probRhoSummary">—</b></div>
+            <div class="metric"><span>Effective leftover value</span><b id="probEffectiveSummary">—</b></div>
+            <div class="metric"><span>Selected-Q result</span><b id="probSelectedSummary">—</b></div>
+            <div class="metric"><span>Model optimum</span><b id="probOptimalSummary">—</b></div>
+          </div>
+
+          <div class="prob-explanation-grid">
+            <div class="prob-narrative">
+              <div class="prob-step">
+                <h4>1. Convert reliability into an effective leftover value</h4>
+                <p id="probExpectedValueText"></p>
+              </div>
+              <div class="prob-step">
+                <h4>2. Interpret the selected production quantity</h4>
+                <p id="probSelectedText"></p>
+              </div>
+              <div class="prob-step">
+                <h4>3. Understand why the model recommends its optimal quantity</h4>
+                <p id="probOptimalText"></p>
+              </div>
+              <div class="prob-step">
+                <h4>4. Separate expected profit from contract risk</h4>
+                <p id="probRiskText"></p>
+                <div class="prob-outcomes">
+                  <div class="prob-outcome accepted"><span id="probAcceptedLabel">Partner accepts</span><b id="probAcceptedProfit">—</b></div>
+                  <div class="prob-outcome rejected"><span id="probRejectedLabel">Partner rejects</span><b id="probRejectedProfit">—</b></div>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div id="probFormulaBox" class="prob-formula-box"></div>
+              <div id="probManagerialNote" class="prob-managerial-note"></div>
+              <div class="callout warn"><b>Reliability check:</b> <span id="probThresholdText"></span></div>
+            </div>
+          </div>
+        </div>
+
         <div class="formula-grid">
           <div class="card pad">
             <h3>Capped-buyback calculation</h3>
@@ -216,5 +266,6 @@
 
   <footer class="footer"><div class="container"><b>The SARTHAK Dilemma — Interactive Case Lab</b><br>Student-facing educational site based on the supplied short case, teaching note and classroom workbooks.</div></footer>
   <script src="assets/buyback-lab.js"></script>
+  <script src="assets/buyback-explanation.js"></script>
 </body>
 </html>
