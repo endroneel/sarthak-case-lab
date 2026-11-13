@@ -1,0 +1,84 @@
+name: Capture teaching-site screenshots
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/capture-teaching-sites.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CI: true
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install Playwright
+        run: |
+          npm init -y
+          npm install playwright@1.51.1
+          npx playwright install --with-deps chromium
+
+      - name: Capture live websites
+        run: |
+          cat > capture.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+
+          const sites = [
+            ['ironhold-home', 'https://endroneel.github.io/Ironhold-Game/'],
+            ['ironhold-france', 'https://endroneel.github.io/Ironhold-Game/france.html'],
+            ['supply-chain-lab', 'https://supplychainanalyticslab.com/'],
+            ['cpm-lab', 'https://endroneel.github.io/pms-cpm-classroom-demo/index.html'],
+            ['sarthak-home', 'https://endroneel.github.io/sarthak-case-lab/'],
+            ['sarthak-pricing', 'https://endroneel.github.io/sarthak-case-lab/pricing.html'],
+            ['sarthak-decision', 'https://endroneel.github.io/sarthak-case-lab/decision.html'],
+            ['sarthak-buyback', 'https://endroneel.github.io/sarthak-case-lab/buyback.html']
+          ];
+
+          fs.mkdirSync('screenshots', { recursive: true });
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext({
+            viewport: { width: 1440, height: 900 },
+            deviceScaleFactor: 1,
+            colorScheme: 'light'
+          });
+
+          for (const [name, url] of sites) {
+            const page = await context.newPage();
+            try {
+              await page.goto(url, { waitUntil: 'networkidle', timeout: 90000 });
+              await page.waitForTimeout(2500);
+              await page.screenshot({ path: `screenshots/${name}.png`, fullPage: false });
+              await page.screenshot({ path: `screenshots/${name}-full.png`, fullPage: true });
+              console.log(`Captured ${name}: ${await page.title()}`);
+            } catch (error) {
+              console.error(`Failed ${name}:`, error);
+              await page.screenshot({ path: `screenshots/${name}-error.png`, fullPage: false }).catch(() => {});
+            } finally {
+              await page.close();
+            }
+          }
+          await browser.close();
+          EOF
+          node capture.mjs
+
+      - name: Upload screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: teaching-sites-screenshots
+          path: screenshots/
+          retention-days: 3
